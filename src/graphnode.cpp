@@ -1,5 +1,7 @@
 #include "graphedge.h"
 #include "graphnode.h"
+#include "chatlogic.h"
+#include <iostream>
 
 GraphNode::GraphNode(int id)
 {
@@ -8,7 +10,6 @@ GraphNode::GraphNode(int id)
 
 GraphNode::~GraphNode()
 {
-
 }
 
 void GraphNode::AddToken(std::string token)
@@ -21,27 +22,23 @@ void GraphNode::AddEdgeToParentNode(GraphEdge *edge)
     _parentEdges.push_back(edge);
 }
 
-void GraphNode::AddEdgeToChildNode(GraphEdge *edge)
-{   
+void GraphNode::AddEdgeToChildNode(std::unique_ptr<GraphEdge> edge)
+{
     _childEdges.push_back(std::move(edge));
 }
 
-void GraphNode::MoveChatbot(ChatBot *chatbot)
+void GraphNode::MoveChatbotHere(ChatBot chatBot)
 {
-    _chatBot = std::move(chatbot);
-    _chatBot->SetCurrentNode(this);
+    _chatBot = std::move(chatBot);
+    _chatBot.SetCurrentNode(this);
 }
 
-void GraphNode::MoveChatbotNewNode(GraphNode *newNode)
+void GraphNode::MoveChatbotToNewNode(GraphNode *newNode)
 {
-    newNode->MoveChatbot(std::move(_chatBot));
-    _chatBot = nullptr; // invalidate pointer at source
+    newNode->MoveChatbotHere(std::move(_chatBot));
 }
-
 
 GraphEdge *GraphNode::GetChildEdgeAtIndex(int index)
 {
-
     return _childEdges[index].get();
-
 }
